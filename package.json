@@ -1,0 +1,25 @@
+{
+  "name": "tgbotalarm",
+  "version": "1.0.0",
+  "description": "Telegram Bot for get air alarm and other features. ",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "moment": "^2.29.4",
+    "node-cron": "^3.0.1",
+    "node-telegram-bot-api": "^0.58.0",
+    "puppeteer": "^16.1.0"
+  },
+  "devDependencies": {
+    "@types/node-telegram-bot-api": "^0.57.1",
+    "nodemon": "^2.0.19"
+  }
+}
