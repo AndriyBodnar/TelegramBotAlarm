@@ -36,7 +36,7 @@ export async function alarmMap() {
 
 alarmMap();
 
-
 cron.schedule("*/30 * * * * *", alarmMap, {
   timezone: "Europe/Kiev",
 });
+

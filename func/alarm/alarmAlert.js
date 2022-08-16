@@ -1,31 +1,21 @@
 import axios from "axios";
-
 import moment from "moment";
-import { statesOfUkraine } from "../../index.js";
-import {
-  getInfoFirebase,
-  setValueEnableAlarm,
-} from "../database/firebaseRequest.js";
+import { bot, state } from "../../index.js";
+import { setValueEnableAlarm } from "../../database/firebaseRequest.js";
 import { axiosHelp, getWatch } from "../helpFunction/helpFunc.js";
 
 moment.locale("UK");
 
-async function alarmSendMessage(msg, bot, chatsID, voice) {
+async function alarmSendMessage(msg, chatsID) {
   if (!!chatsID) {
-    for (let el of chatsID) {
-      await bot
-        .sendAudio(el, voice, {
-          caption: msg,
-        })
-        .catch((e) => console.log(e));
+    for (let id of chatsID) {
+      await bot.sendMessage(id, msg).catch((e) => console.log(e));
     }
   }
 }
 
-export async function testAlarm(state, bot, chatsID) {
-  let obj = {};
-
-  await getInfoFirebase(state, "enableAlarm");
+export async function testAlarm() {
+  let stateStates = {};
 
   let responseAlarm = await axiosHelp(
     `https://emapa.fra1.cdn.digitaloceanspaces.com/statuses.json`
@@ -33,40 +23,31 @@ export async function testAlarm(state, bot, chatsID) {
 
   Object.keys(responseAlarm.states).forEach((el) => {
     if (el.includes("."))
-      return (obj[`${"Київ"}`] = responseAlarm.states[`${el}`].enabled);
-    return (obj[`${el}`] = responseAlarm.states[`${el}`].enabled);
+      return (stateStates[`${"Київ"}`] = responseAlarm.states[`${el}`].enabled);
+    return (stateStates[`${el}`] = responseAlarm.states[`${el}`].enabled);
   });
 
-  statesOfUkraine.forEach((el) => {
-    if (!state.enableAlarm[`${el}`] && obj[`${el}`]) {
-      state.enableAlarm[`${el}`] = obj[`${el}`];
+  state.statesOfUkraine.forEach((el) => {
+    if (!state.enableAlarm[`${el}`] && stateStates[`${el}`]) {
+      state.enableAlarm[`${el}`] = stateStates[`${el}`];
 
-      setValueEnableAlarm(state.enableAlarm, el, obj[`${el}`]);
-      alarmSendMessage(
-        `🚨ПОВІТРЯНА ТРИВОГА ${el}!🚨`,
-        bot,
-        chatsID[`${el}`],
-        `./assets/voice-messages/alarm.ogg`
-      );
+      setValueEnableAlarm(state.enableAlarm, el, stateStates[`${el}`]);
+      alarmSendMessage(`🚨ПОВІТРЯНА ТРИВОГА ${el}!🚨`, state.chatsID[`${el}`]);
 
       return state.enableAlarm.value;
     }
-    if (state.enableAlarm[`${el}`] && !obj[`${el}`]) {
-      state.enableAlarm[`${el}`] = obj[`${el}`];
+    if (state.enableAlarm[`${el}`] && !stateStates[`${el}`]) {
+      state.enableAlarm[`${el}`] = stateStates[`${el}`];
 
-      setValueEnableAlarm(state.enableAlarm, el, obj[`${el}`]);
-      alarmSendMessage(
-        `🟢ВІДБІЙ ТРИВОГИ!🟢 ${el}`,
-        bot,
-        chatsID[`${el}`],
-        `./assets/voice-messages/cancelAlarm.ogg`
-      );
+      setValueEnableAlarm(state.enableAlarm, el, stateStates[`${el}`]);
+      alarmSendMessage(`🟢ВІДБІЙ ТРИВОГИ!🟢 ${el}`, state.chatsID[`${el}`]);
+
       return state.enableAlarm.value;
     }
   });
 }
 
-export async function timeAlarmMap(bot, chatId, msgId, alarmState) {
+export async function timeAlarmMap(chatId, msgId, alarmState) {
   bot.sendChatAction(chatId, "upload_photo");
   const { data } = await axios.get(
     `https://emapa.fra1.cdn.digitaloceanspaces.com/statuses.json`
@@ -109,3 +90,4 @@ ${
     });
   }
 }
+
