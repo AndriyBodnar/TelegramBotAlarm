@@ -2,17 +2,19 @@ import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
 import { fork } from "node:child_process";
-
 import { testAlarm } from "./func/alarm/alarmAlert.js";
 import { allState } from "./database/firebaseRequest.js";
 import { callTimeAlarmMap } from "./func/alarm/callTimeAlarmMap.js";
 import { callSetChangeChatId } from "./func/chatId/callSetChangeChatId.js";
+
+import { callDeadStat } from "./func/deadstat/callDeadStat.js";
 
 process.env["NTBA_FIX_350"] = 1;
 
 export let bot;
 
 export let state = {
+  dead: { Особовийсклад: { count: null, add: null } },
   requestInterval: {
     requestAlarm: {},
   },
@@ -25,6 +27,8 @@ try {
 }
 
 const start = async () => {
+  console.log(process.env.npm_package_version);
+
   await allState();
 
   fork("./func/alarm/alarmMap.js");
@@ -41,6 +45,8 @@ const start = async () => {
       await callSetChangeChatId(text, chatId, msgId);
 
       await callTimeAlarmMap(text, chatId, msgId);
+
+      await callDeadStat(text, chatId, msgId);
     }
   });
 

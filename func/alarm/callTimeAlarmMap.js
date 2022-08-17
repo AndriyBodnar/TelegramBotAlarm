@@ -1,9 +1,10 @@
+import { counterForDb } from "../../database/counter.js";
 import { callTimeAlarmMapEnum } from "../../enums/callTimeAlarmMap.enum.js";
 import { state } from "../../index.js";
 import { delay } from "../helpFunction/helpFunc.js";
 import { timeAlarmMap } from "./alarmAlert.js";
-
 let { COMMAND, TEXT_COMMAND } = callTimeAlarmMapEnum;
+
 export async function callTimeAlarmMap(text, chatId, msgId) {
   let alarmInterval = state.requestInterval.requestAlarm;
 
@@ -11,6 +12,7 @@ export async function callTimeAlarmMap(text, chatId, msgId) {
     !alarmInterval[`${chatId}`] &&
     (text.includes(COMMAND) || text.toLowerCase() === TEXT_COMMAND)
   ) {
+    await counterForDb(callTimeAlarmMap.name, chatId);
     let alarmState;
 
     // alarmInterval[`${chatId}`] = true;

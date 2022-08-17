@@ -1,9 +1,9 @@
 import axios from "axios";
+import fs from "fs";
 
 export const randomNumber = (start, end) => {
   return +(Math.random() * (end - start) + start).toFixed(0);
 };
-
 
 export function delay(duration) {
   return new Promise((resolve) => {
@@ -12,27 +12,10 @@ export function delay(duration) {
 }
 
 export async function axiosHelp(url) {
-  let { data } = await axios.get(url);
+  let { data } = await axios
+    .get(url)
+    .catch((e) => console.log("AXIOS HELP", e));
   return data;
-}
-
-export async function setHourFunc(func, hours, min) {
-  var now = new Date();
-  var ms =
-    new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      hours,
-      min,
-      0,
-      0
-    ) - now;
-  if (ms < 0) {
-    ms += 86400000;
-  }
-
-  setTimeout(func, ms);
 }
 
 export function getWatch(min) {
@@ -63,3 +46,20 @@ export function getWatch(min) {
       return "🕚";
   }
 }
+
+export function base64_encode(file) {
+  // read binary data
+  var bitmap = fs.readFileSync(file);
+  // convert binary data to base64 encoded string
+  return new Buffer(bitmap).toString("base64");
+}
+
+// const imageRef = ref(storage, "image/deadstat.png");
+// var base64str = base64_encode(`assets/img/deadstat.png`);
+// console.log(base64str);
+// uploadString(imageRef, base64str, "base64").then((snapshot) => {
+//   getDownloadURL(snapshot.ref).then((url) => {
+//     console.log(url);
+//   });
+//   console.log("Uploaded a base64url string!");
+// });

@@ -1,7 +1,8 @@
+import "dotenv/config";
 import axios from "axios";
 import moment from "moment";
 import { bot, state } from "../../index.js";
-import { setValueEnableAlarm } from "../../database/firebaseRequest.js";
+import { setValueFirebase } from "../../database/firebaseRequest.js";
 import { axiosHelp, getWatch } from "../helpFunction/helpFunc.js";
 
 moment.locale("UK");
@@ -17,9 +18,7 @@ async function alarmSendMessage(msg, chatsID) {
 export async function testAlarm() {
   let stateStates = {};
 
-  let responseAlarm = await axiosHelp(
-    `https://emapa.fra1.cdn.digitaloceanspaces.com/statuses.json`
-  );
+  let responseAlarm = await axiosHelp(process.env.URL_ALARM);
 
   Object.keys(responseAlarm.states).forEach((el) => {
     if (el.includes("."))
@@ -31,7 +30,12 @@ export async function testAlarm() {
     if (!state.enableAlarm[`${el}`] && stateStates[`${el}`]) {
       state.enableAlarm[`${el}`] = stateStates[`${el}`];
 
-      setValueEnableAlarm(state.enableAlarm, el, stateStates[`${el}`]);
+      setValueFirebase(
+        state.enableAlarm,
+        el,
+        stateStates[`${el}`],
+        "enableAlarm"
+      );
       alarmSendMessage(`🚨ПОВІТРЯНА ТРИВОГА ${el}!🚨`, state.chatsID[`${el}`]);
 
       return state.enableAlarm.value;
@@ -39,7 +43,12 @@ export async function testAlarm() {
     if (state.enableAlarm[`${el}`] && !stateStates[`${el}`]) {
       state.enableAlarm[`${el}`] = stateStates[`${el}`];
 
-      setValueEnableAlarm(state.enableAlarm, el, stateStates[`${el}`]);
+      setValueFirebase(
+        state.enableAlarm,
+        el,
+        stateStates[`${el}`],
+        "enableAlarm"
+      );
       alarmSendMessage(`🟢ВІДБІЙ ТРИВОГИ!🟢 ${el}`, state.chatsID[`${el}`]);
 
       return state.enableAlarm.value;
@@ -49,10 +58,10 @@ export async function testAlarm() {
 
 export async function timeAlarmMap(chatId, msgId, alarmState) {
   bot.sendChatAction(chatId, "upload_photo");
-  const { data } = await axios.get(
-    `https://emapa.fra1.cdn.digitaloceanspaces.com/statuses.json`
-  );
-  let response = data.states[alarmState];
+
+  let responseAlarm = await axiosHelp(process.env.URL_ALARM);
+
+  let response = responseAlarm.states[alarmState];
   let time = moment(moment(response.enabled_at)).format("LT");
   let timeEnd = moment(moment(response.disabled_at)).format("LLL");
 
@@ -90,4 +99,3 @@ ${
     });
   }
 }
-

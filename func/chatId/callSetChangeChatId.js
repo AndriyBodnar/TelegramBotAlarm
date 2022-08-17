@@ -1,7 +1,8 @@
+import { counterForDb } from "../../database/counter.js";
 import {
   getInfoFirebase,
   addChatFirebase,
-  deleteChatFirebase,
+  setValueFirebase,
 } from "../../database/firebaseRequest.js";
 import { callSetChangeChatIdEnum } from "../../enums/callSetChangeChatId.enum.js";
 import { bot, state } from "../../index.js";
@@ -30,11 +31,14 @@ export async function callSetChangeChatId(text, chatId, msgId) {
   }
 
   if (text.includes(COMMAND)) {
+    await counterForDb(callSetChangeChatId.name, chatId);
+
     for (let id in state.chatsID) {
       if (state.chatsID[id].includes(chatId)) {
         state.chatsID[id].splice(state.chatsID[id].indexOf(chatId), 1);
 
-        deleteChatFirebase(id, state.chatsID[id]);
+        // deleteChatFirebase(id, state.chatsID[id]);
+        setValueFirebase(state.chatsID, id, state.chatsID[id], "chatsID");
 
         await bot.sendMessage(chatId, SELECT, {
           parse_mode: `HTML`,
