@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "cross-env MODE=production node ./config/build/esbuild-config.js",
+    "build:dev": "cross-env MODE=development node ./config/build/esbuild-config.js"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +25,8 @@
   },
   "devDependencies": {
     "@types/node-telegram-bot-api": "^0.57.1",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.15.5",
     "nodemon": "^2.0.19"
   }
 }

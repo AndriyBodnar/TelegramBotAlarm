@@ -7,13 +7,21 @@ import { axiosHelp, getWatch } from "../helpFunction/helpFunc.js";
 
 moment.locale("UK");
 
-async function alarmSendMessage(msg, chatsID) {
+async function alarmSendMessage(msg, chatsID, el) {
   if (!!chatsID) {
     for (let id of chatsID) {
-      await bot.sendMessage(id, msg).catch((e) => console.log(e));
+      await bot.sendMessage(id, msg).catch((e) => {
+        console.log(e.code, e.response.body);
+        chatsID.splice(chatsID.indexOf(id), 1);
+        setValueFirebase(state.chatsID, el, chatsID, "chatsID");
+      });
     }
   }
 }
+// chatsID.splice(chatsID.indexOf(id), 1);
+
+// // deleteChatFirebase(id, state.chatsID[id]);
+// setValueFirebase(state.chatsID, el, chatsID, "chatsID");
 
 export async function testAlarm() {
   let stateStates = {};
@@ -36,7 +44,11 @@ export async function testAlarm() {
         stateStates[`${el}`],
         "enableAlarm"
       );
-      alarmSendMessage(`🚨ПОВІТРЯНА ТРИВОГА ${el}!🚨`, state.chatsID[`${el}`]);
+      alarmSendMessage(
+        `🚨ПОВІТРЯНА ТРИВОГА ${el}!🚨`,
+        state.chatsID[`${el}`],
+        el
+      );
 
       return state.enableAlarm.value;
     }
@@ -49,7 +61,7 @@ export async function testAlarm() {
         stateStates[`${el}`],
         "enableAlarm"
       );
-      alarmSendMessage(`🟢ВІДБІЙ ТРИВОГИ!🟢 ${el}`, state.chatsID[`${el}`]);
+      alarmSendMessage(`🟢ВІДБІЙ ТРИВОГИ!🟢 ${el}`, state.chatsID[`${el}`], el);
 
       return state.enableAlarm.value;
     }
@@ -62,6 +74,7 @@ export async function timeAlarmMap(chatId, msgId, alarmState) {
   let responseAlarm = await axiosHelp(process.env.URL_ALARM);
 
   let response = responseAlarm.states[alarmState];
+
   let time = moment(moment(response.enabled_at)).format("LT");
   let timeEnd = moment(moment(response.disabled_at)).format("LLL");
 

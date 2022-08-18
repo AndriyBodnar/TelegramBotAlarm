@@ -9,6 +9,8 @@ export async function callTimeAlarmMap(text, chatId, msgId) {
   let alarmInterval = state.requestInterval.requestAlarm;
 
   if (
+    
+    Object.values(state.chatsID).flat().includes(chatId) &&
     !alarmInterval[`${chatId}`] &&
     (text.includes(COMMAND) || text.toLowerCase() === TEXT_COMMAND)
   ) {
@@ -21,7 +23,10 @@ export async function callTimeAlarmMap(text, chatId, msgId) {
     // }, 30000);
 
     for (let el in state.chatsID) {
-      if (state.chatsID[el].includes(chatId)) alarmState = el;
+      if (state.chatsID[el].includes(chatId)) {
+        if (el === "Київ") alarmState = "м. Київ";
+        else alarmState = el;
+      }
     }
 
     return await timeAlarmMap(chatId, msgId, alarmState);

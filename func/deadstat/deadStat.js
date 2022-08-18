@@ -218,7 +218,7 @@ export async function deadStat(chatId, msgId) {
 
       const imageRef = ref(
         storage,
-        `image/deadstat_${dead["Оновлено"].split(".").join("")}.png`
+        `image/deadstat/deadstat_${dead["Оновлено"].split(".").join("")}.png`
       );
 
       uploadBytes(imageRef, fileBuffer).then((snapshot) => {

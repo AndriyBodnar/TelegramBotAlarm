@@ -6,8 +6,8 @@ import { testAlarm } from "./func/alarm/alarmAlert.js";
 import { allState } from "./database/firebaseRequest.js";
 import { callTimeAlarmMap } from "./func/alarm/callTimeAlarmMap.js";
 import { callSetChangeChatId } from "./func/chatId/callSetChangeChatId.js";
-
 import { callDeadStat } from "./func/deadstat/callDeadStat.js";
+
 
 process.env["NTBA_FIX_350"] = 1;
 

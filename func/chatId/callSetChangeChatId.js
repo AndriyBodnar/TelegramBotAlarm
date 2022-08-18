@@ -11,6 +11,8 @@ import { timeAlarmMap } from "../alarm/alarmAlert.js";
 let { COMMAND, SELECT, YOUR_SELECT } = callSetChangeChatIdEnum;
 
 export async function callSetChangeChatId(text, chatId, msgId) {
+  if (state.chatsID === null) state.chatsID = { "Львівська область": [] };
+
   let statesUkraineKeyboard = state.statesOfUkraine.map((el) => {
     return [el];
   });
@@ -25,7 +27,8 @@ export async function callSetChangeChatId(text, chatId, msgId) {
         remove_keyboard: true,
       },
     });
-    await timeAlarmMap(chatId, msgId, text);
+    if (text === "Київ") await timeAlarmMap(chatId, msgId, "м. Київ");
+    else await timeAlarmMap(chatId, msgId, text);
     await addChatFirebase(text, chatId);
     await getInfoFirebase("chatsID");
   }
@@ -52,6 +55,7 @@ export async function callSetChangeChatId(text, chatId, msgId) {
   }
 
   if (
+    !text.includes("/deadstat") &&
     !Object.values(state.chatsID).flat().includes(chatId) &&
     !text.includes(COMMAND)
   ) {
