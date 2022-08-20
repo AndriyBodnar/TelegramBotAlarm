@@ -8,12 +8,15 @@ export async function alarmMap() {
     .launch({
       // args: ["--no-sandbox", "--disable-setuid-sandbox"],
       // executablePath: "/usr/bin/chromium-browser",
+      // ignoreDefaultArgs: ["--disable-extensions"],
+      // headless: true,
+      // executablePath: "/usr/bin/chromium-browser",
       // headless: true,
     })
     .catch((e) => console.log(e));
   const page = await browser.newPage().catch((e) => console.log(e));
   await page
-    .goto(process.env.URL_MAP, {
+    .goto("https://alerts.in.ua/", {
       darkMode: true,
     })
     .catch((e) => console.log(e));
