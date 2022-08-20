@@ -4,7 +4,8 @@ import { bot, state } from "../index.js";
 
 const instance = axios.create({
   //withCredentials: true,
-  baseURL: process.env.DATABASE_URL_FIREBASE,
+  baseURL:
+    "https://alarmbot-867dc-default-rtdb.europe-west1.firebasedatabase.app",
   headers: {
     Connection: "keep-alive",
     "Accept-Encoding": "",

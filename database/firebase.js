@@ -2,11 +2,11 @@ import "dotenv/config";
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 const firebaseConfig = {
-  apiKey: process.env.APIKEY_FIREBASE,
+  apiKey: `AIzaSyAEdUwDddKv0x5uoaCpesSenZfhPM_vVVA`,
   authDomain: "alarmbot-867dc.firebaseapp.com",
-  databaseURL: process.env.DATABASE_URL_FIREBASE,
-  projectId: process.env.PROJECT_ID_FIREBASE,
-  storageBucket: process.env.STORAGE_BUCKET_FIREBASE,
+  databaseURL: `https://alarmbot-867dc-default-rtdb.europe-west1.firebasedatabase.app`,
+  projectId: `alarmbot-867dc`,
+  storageBucket: `alarmbot-867dc.appspot.com`,
   messagingSenderId: "904490606735",
   appId: "1:904490606735:web:e34e9219e2b0f54c3bd0fa",
 };

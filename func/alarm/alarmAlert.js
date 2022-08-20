@@ -26,7 +26,9 @@ async function alarmSendMessage(msg, chatsID, el) {
 export async function testAlarm() {
   let stateStates = {};
 
-  let responseAlarm = await axiosHelp(process.env.URL_ALARM);
+  let responseAlarm = await axiosHelp(
+    "https://emapa.fra1.cdn.digitaloceanspaces.com/statuses.json"
+  );
 
   Object.keys(responseAlarm.states).forEach((el) => {
     if (el.includes("."))
@@ -71,7 +73,9 @@ export async function testAlarm() {
 export async function timeAlarmMap(chatId, msgId, alarmState) {
   bot.sendChatAction(chatId, "upload_photo");
 
-  let responseAlarm = await axiosHelp(process.env.URL_ALARM);
+  let responseAlarm = await axiosHelp(
+    "https://emapa.fra1.cdn.digitaloceanspaces.com/statuses.json"
+  );
 
   let response = responseAlarm.states[alarmState];
 

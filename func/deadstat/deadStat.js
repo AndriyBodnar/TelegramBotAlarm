@@ -13,7 +13,9 @@ const { createCanvas, loadImage, registerFont } = pkg;
 export async function deadStat(chatId, msgId) {
   await counterForDb(deadStat.name, chatId).catch((e) => console.log(e));
 
-  let response = await axiosHelp(process.env.URL_DEADSTAT);
+  let response = await axiosHelp(
+    `https://index.minfin.com.ua/ua/russian-invading/casualties/`
+  );
   let parser = parse(response).querySelector(`.casualties`);
   let dead = state.dead;
   dead["Оновлено"] = parse(response)
