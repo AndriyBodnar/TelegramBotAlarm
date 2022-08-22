@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "cross-env TOKEN=TEST TODO nodemon index.js",
+    "dev": "cross-env TOKEN=5177195328:AAFs4CrfFg7At7FtWkCPDLgRoleOhtC0fA4 nodemon index.js",
     "start": "node index.js",
     "build": "cross-env MODE=production node ./config/build/esbuild-config.js",
     "build:dev": "cross-env MODE=development node ./config/build/esbuild-config.js"
