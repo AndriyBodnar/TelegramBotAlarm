@@ -54,8 +54,8 @@ export async function testAlarm() {
         );
 
         alarmSendMessage(
-          `🚨ПОВІТРЯНА ТРИВОГА!🚨
-${el}`,
+          `🚨📢ПОВІТРЯНА ТРИВОГА!🚨📢
+🏛${el}`,
           state.chatsID[`${el}`],
           el
         );
@@ -64,9 +64,9 @@ ${el}`,
       }
       if (state.enableAlarm[`${el}`].value && !stateStates[`${el}`].value) {
         alarmSendMessage(
-          `🟢ВІДБІЙ ТРИВОГИ!🟢
-${el}           
-Тривалість: ${(
+          `🟢ВІДБІЙ ПОВІТРЯНОЇ ТРИВОГИ🟢
+🏛${el}           
+⌛Тривалість: ${(
             (Date.now() -
               new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
             60000
