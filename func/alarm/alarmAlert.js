@@ -1,5 +1,4 @@
 import "dotenv/config";
-import axios from "axios";
 import moment from "moment";
 import { bot, state } from "../../index.js";
 import { setValueFirebase } from "../../database/firebaseRequest.js";
@@ -18,56 +17,80 @@ async function alarmSendMessage(msg, chatsID, el) {
     }
   }
 }
-// chatsID.splice(chatsID.indexOf(id), 1);
 
-// // deleteChatFirebase(id, state.chatsID[id]);
-// setValueFirebase(state.chatsID, el, chatsID, "chatsID");
 
 export async function testAlarm() {
   let stateStates = {};
+  try {
+    let responseAlarm = await axiosHelp(
+      "https://emapa.fra1.cdn.digitaloceanspaces.com/statuses.json"
+    );
 
-  let responseAlarm = await axiosHelp(
-    "https://emapa.fra1.cdn.digitaloceanspaces.com/statuses.json"
-  );
+    Object.keys(responseAlarm.states).forEach((el) => {
+      if (el.includes("."))
+        return (stateStates[`${"Київ"}`] = {
+          value: responseAlarm.states[`${el}`].enabled,
+        });
+      return (stateStates[`${el}`] = {
+        value: responseAlarm.states[`${el}`].enabled,
+      });
+    });
 
-  Object.keys(responseAlarm.states).forEach((el) => {
-    if (el.includes("."))
-      return (stateStates[`${"Київ"}`] = responseAlarm.states[`${el}`].enabled);
-    return (stateStates[`${el}`] = responseAlarm.states[`${el}`].enabled);
-  });
+    state.statesOfUkraine.forEach((el) => {
+      if (!state.enableAlarm[`${el}`].value && stateStates[`${el}`].value) {
+        state.enableAlarm[`${el}`] = {
+          value: stateStates[`${el}`].value,
+          enabled_at: responseAlarm.states[`${el}`].enabled_at,
+        };
 
-  state.statesOfUkraine.forEach((el) => {
-    if (!state.enableAlarm[`${el}`] && stateStates[`${el}`]) {
-      state.enableAlarm[`${el}`] = stateStates[`${el}`];
+        setValueFirebase(
+          state.enableAlarm[`${el}`],
+          null,
+          null,
+          `enableAlarm/${encodeURIComponent(el)}`
+        );
 
-      setValueFirebase(
-        state.enableAlarm,
-        el,
-        stateStates[`${el}`],
-        "enableAlarm"
-      );
-      alarmSendMessage(
-        `🚨ПОВІТРЯНА ТРИВОГА ${el}!🚨`,
-        state.chatsID[`${el}`],
-        el
-      );
+        alarmSendMessage(
+          `🚨ПОВІТРЯНА ТРИВОГА🚨
+🏛${el}`,
+          state.chatsID[`${el}`],
+          el
+        );
 
-      return state.enableAlarm.value;
-    }
-    if (state.enableAlarm[`${el}`] && !stateStates[`${el}`]) {
-      state.enableAlarm[`${el}`] = stateStates[`${el}`];
+        return state.enableAlarm.value;
+      }
+      if (state.enableAlarm[`${el}`].value && !stateStates[`${el}`].value) {
+        alarmSendMessage(
+          `🟢ВІДБІЙ ПОВІТРЯНОЇ ТРИВОГИ🟢
+🏛${el}           
+⌛Тривалість: ${(
+            (Date.now() -
+              new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
+            60000
+          ).toFixed(0)} min
+      `,
+          state.chatsID[`${el}`],
+          el
+        );
 
-      setValueFirebase(
-        state.enableAlarm,
-        el,
-        stateStates[`${el}`],
-        "enableAlarm"
-      );
-      alarmSendMessage(`🟢ВІДБІЙ ТРИВОГИ!🟢 ${el}`, state.chatsID[`${el}`], el);
+        state.enableAlarm[`${el}`] = {
+          value: stateStates[`${el}`].value,
+          enabled_at: null,
+        };
 
-      return state.enableAlarm.value;
-    }
-  });
+        setValueFirebase(
+          state.enableAlarm[`${el}`],
+          null,
+          null,
+          `enableAlarm/${encodeURIComponent(el)}`
+        );
+
+        return state.enableAlarm.value;
+      }
+    });
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export async function timeAlarmMap(chatId, msgId, alarmState) {

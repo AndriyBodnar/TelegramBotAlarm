@@ -10,8 +10,6 @@ export async function alarmMap() {
       // executablePath: "/usr/bin/chromium-browser",
       // ignoreDefaultArgs: ["--disable-extensions"],
       headless: true,
-      // executablePath: "/usr/bin/chromium-browser",
-      // headless: true,
     })
     .catch((e) => console.log(e));
   const page = await browser.newPage().catch((e) => console.log(e));
