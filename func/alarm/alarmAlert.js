@@ -18,7 +18,6 @@ async function alarmSendMessage(msg, chatsID, el) {
   }
 }
 
-
 export async function testAlarm() {
   let stateStates = {};
   try {
@@ -63,12 +62,14 @@ export async function testAlarm() {
         alarmSendMessage(
           `🟢ВІДБІЙ ПОВІТРЯНОЇ ТРИВОГИ🟢
 🏛${el}           
-⌛Тривалість: ${(
-            (Date.now() -
-              new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
-            60000
-          ).toFixed(0)} min
-      `,
+${
+  !!state.enableAlarm[`${el}`].enabled_at &&
+  `⌛Тривалість: ${(
+    (Date.now() - new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
+    60000
+  ).toFixed(0)} min
+`
+}`,
           state.chatsID[`${el}`],
           el
         );
