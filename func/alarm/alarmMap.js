@@ -18,6 +18,9 @@ export async function alarmMap() {
   await page
     .goto("https://alerts.in.ua/", {
       darkMode: true,
+      waitUntil: "load",
+      // Remove the timeout
+      timeout: 0,
     })
     .catch((e) => console.log(e));
   await page.emulateMediaFeatures([
