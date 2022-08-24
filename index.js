@@ -50,9 +50,7 @@ const start = async () => {
   });
 
   bot.on("callback_query", async (msg) => {});
-  bot.on("polling_error", (msg) => {
-    bot.sendMessage(408965128, msg);
-  });
+  bot.on("polling_error", (msg) => {});
 };
 
 start();

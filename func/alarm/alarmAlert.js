@@ -72,7 +72,7 @@ export async function testAlarm() {
           `🟢ВІДБІЙ ПОВІТРЯНОЇ ТРИВОГИ🟢
 🏛${el}           
 ${`⌛Тривалість: ${
-  state.enableAlarm[`${el}`].enabled_at !== null
+  !!state.enableAlarm[`${el}`].enabled_at
     ? (
         (Date.now() -
           new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
@@ -100,7 +100,6 @@ ${`⌛Тривалість: ${
       }
     });
   } catch (e) {
-    bot.sendMessage(408965128, e);
     console.log(e);
   }
 }
