@@ -30,15 +30,17 @@ export async function testAlarm() {
     );
 
     Object.keys(responseAlarm.states).forEach((el) => {
-      if (el.includes("."))
+      if (el.includes(".")) {
         return (stateStates[`${"Київ"}`] = {
           value: responseAlarm.states[`${el}`].enabled,
           enabled_at: responseAlarm.states[`${el}`].enabled_at,
         });
-      return (stateStates[`${el}`] = {
-        value: responseAlarm.states[`${el}`].enabled,
-        enabled_at: responseAlarm.states[`${el}`].enabled_at,
-      });
+      } else {
+        return (stateStates[`${el}`] = {
+          value: responseAlarm.states[`${el}`].enabled,
+          enabled_at: responseAlarm.states[`${el}`].enabled_at,
+        });
+      }
     });
 
     state.statesOfUkraine.forEach((el) => {
@@ -69,11 +71,15 @@ export async function testAlarm() {
         alarmSendMessage(
           `🟢ВІДБІЙ ПОВІТРЯНОЇ ТРИВОГИ🟢
 🏛${el}           
-${`⌛Тривалість: ${(
-  !!state.enableAlarm[`${el}`].enabled_at?.() &&
-  (Date.now() - new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
-    60000
-).toFixed(0)} min
+${`⌛Тривалість: ${
+  state.enableAlarm[`${el}`].enabled_at !== null
+    ? (
+        (Date.now() -
+          new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
+        60000
+      ).toFixed(0)
+    : `empty`
+} min
 `}`,
           state.chatsID[`${el}`],
           el
