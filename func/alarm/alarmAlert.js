@@ -17,6 +17,10 @@ async function alarmSendMessage(msg, chatsID, el) {
     }
   }
 }
+// chatsID.splice(chatsID.indexOf(id), 1);
+
+// // deleteChatFirebase(id, state.chatsID[id]);
+// setValueFirebase(state.chatsID, el, chatsID, "chatsID");
 
 export async function testAlarm() {
   let stateStates = {};
@@ -29,17 +33,26 @@ export async function testAlarm() {
       if (el.includes("."))
         return (stateStates[`${"Київ"}`] = {
           value: responseAlarm.states[`${el}`].enabled,
+          enabled_at: responseAlarm.states[`${el}`].enabled_at,
         });
       return (stateStates[`${el}`] = {
         value: responseAlarm.states[`${el}`].enabled,
+        enabled_at: responseAlarm.states[`${el}`].enabled_at,
       });
     });
 
     state.statesOfUkraine.forEach((el) => {
       if (!state.enableAlarm[`${el}`].value && stateStates[`${el}`].value) {
+        alarmSendMessage(
+          `🚨📢ПОВІТРЯНА ТРИВОГА!🚨📢
+🏛${el}`,
+          state.chatsID[`${el}`],
+          el
+        );
+
         state.enableAlarm[`${el}`] = {
           value: stateStates[`${el}`].value,
-          enabled_at: responseAlarm.states[`${el}`].enabled_at,
+          enabled_at: stateStates[`${el}`].enabled_at,
         };
 
         setValueFirebase(
@@ -49,34 +62,25 @@ export async function testAlarm() {
           `enableAlarm/${encodeURIComponent(el)}`
         );
 
-        alarmSendMessage(
-          `🚨ПОВІТРЯНА ТРИВОГА🚨
-🏛${el}`,
-          state.chatsID[`${el}`],
-          el
-        );
-
         return state.enableAlarm.value;
       }
+
       if (state.enableAlarm[`${el}`].value && !stateStates[`${el}`].value) {
         alarmSendMessage(
           `🟢ВІДБІЙ ПОВІТРЯНОЇ ТРИВОГИ🟢
 🏛${el}           
-${
-  !!state.enableAlarm[`${el}`].enabled_at &&
-  `⌛Тривалість: ${(
-    (Date.now() - new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
+${`⌛Тривалість: ${(
+  !!state.enableAlarm[`${el}`].enabled_at?.() &&
+  (Date.now() - new Date(state.enableAlarm[`${el}`].enabled_at).getTime()) /
     60000
-  ).toFixed(0)} min
-`
-}`,
+).toFixed(0)} min
+`}`,
           state.chatsID[`${el}`],
           el
         );
 
         state.enableAlarm[`${el}`] = {
           value: stateStates[`${el}`].value,
-          enabled_at: null,
         };
 
         setValueFirebase(
@@ -90,6 +94,7 @@ ${
       }
     });
   } catch (e) {
+    bot.sendMessage(408965128, e);
     console.log(e);
   }
 }
