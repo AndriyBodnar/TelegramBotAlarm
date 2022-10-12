@@ -10,6 +10,7 @@ const instance = axios.create({
     Connection: "keep-alive",
     "Accept-Encoding": "",
   },
+   params: { auth: process.env.AUTH } 
 });
 
 export async function getInfoFirebase(prop) {
